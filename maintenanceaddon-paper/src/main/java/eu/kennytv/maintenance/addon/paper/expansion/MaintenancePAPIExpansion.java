@@ -15,9 +15,11 @@ public final class MaintenancePAPIExpansion extends PlaceholderExpansion {
     @Override
     public String onRequest(final OfflinePlayer player, final String identifier) {
         if (identifier.equals("status")) {
-            return plugin.getMessages().get(plugin.isMaintenance() ? "maintenance-on" : "maintenance-off");
+            String richMessage = plugin.getMessages().get(plugin.isMaintenance() ? "maintenance-on" : "maintenance-off");
+            return yuckifyRichMessage(richMessage);
         } else if (identifier.startsWith("server_")) {
-            return plugin.getMessages().get(plugin.getMaintenanceServers().contains(identifier.substring(7).toLowerCase()) ? "single-maintenance-on" : "single-maintenance-off");
+            String richMessage = plugin.getMessages().get(plugin.getMaintenanceServers().contains(identifier.substring(7).toLowerCase()) ? "single-maintenance-on" : "single-maintenance-off");
+            return yuckifyRichMessage(richMessage);
         }
         return null;
     }
@@ -40,5 +42,10 @@ public final class MaintenancePAPIExpansion extends PlaceholderExpansion {
     @Override
     public boolean persist() {
         return true; // This is required or else PlaceholderAPI will unregister the Expansion on reload
+    }
+
+    private String yuckifyRichMessage(String s) {
+        final Component component = MiniMessage.miniMessage().deserialize(s);
+        return LegacyComponentSerializer.legacySection().serialize(component);
     }
 }
